@@ -456,6 +456,15 @@
   "viewMode.fullWidth": "Ancho completo",
   "viewMode.normal": "Estándar",
   "viewMode.wideScreen": "Pantalla ancha",
+  "workspacePanel.agentDocuments": "Agent Documents",
+  "workspacePanel.progress": "Progress",
+  "workspacePanel.progress.allCompleted": "All tasks completed",
+  "workspacePanel.resources": "Resources",
+  "workspacePanel.resources.empty": "No agent documents yet",
+  "workspacePanel.resources.error": "Failed to load resources",
+  "workspacePanel.resources.loading": "Loading resources...",
+  "workspacePanel.resources.previewError": "Failed to load preview",
+  "workspacePanel.resources.previewLoading": "Loading preview...",
   "you": "Tú",
   "zenMode": "Modo Zen"
 }

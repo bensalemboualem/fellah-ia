@@ -456,6 +456,15 @@
   "viewMode.fullWidth": "全幅表示",
   "viewMode.normal": "標準",
   "viewMode.wideScreen": "ワイドスクリーン",
+  "workspacePanel.agentDocuments": "Agent Documents",
+  "workspacePanel.progress": "Progress",
+  "workspacePanel.progress.allCompleted": "All tasks completed",
+  "workspacePanel.resources": "Resources",
+  "workspacePanel.resources.empty": "No agent documents yet",
+  "workspacePanel.resources.error": "Failed to load resources",
+  "workspacePanel.resources.loading": "Loading resources...",
+  "workspacePanel.resources.previewError": "Failed to load preview",
+  "workspacePanel.resources.previewLoading": "Loading preview...",
   "you": "あなた",
   "zenMode": "集中モード"
 }

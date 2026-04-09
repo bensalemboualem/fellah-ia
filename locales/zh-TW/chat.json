@@ -456,6 +456,15 @@
   "viewMode.fullWidth": "全寬顯示",
   "viewMode.normal": "一般",
   "viewMode.wideScreen": "寬螢幕",
+  "workspacePanel.agentDocuments": "助理文件",
+  "workspacePanel.progress": "進度",
+  "workspacePanel.progress.allCompleted": "所有任務已完成",
+  "workspacePanel.resources": "資源",
+  "workspacePanel.resources.empty": "尚無助理文件",
+  "workspacePanel.resources.error": "資源載入失敗",
+  "workspacePanel.resources.loading": "資源載入中...",
+  "workspacePanel.resources.previewError": "預覽載入失敗",
+  "workspacePanel.resources.previewLoading": "預覽載入中...",
   "you": "你",
   "zenMode": "專注模式"
 }

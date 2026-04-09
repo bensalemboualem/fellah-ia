@@ -456,6 +456,15 @@
   "viewMode.fullWidth": "전체 너비",
   "viewMode.normal": "일반",
   "viewMode.wideScreen": "와이드스크린",
+  "workspacePanel.agentDocuments": "Agent Documents",
+  "workspacePanel.progress": "Progress",
+  "workspacePanel.progress.allCompleted": "All tasks completed",
+  "workspacePanel.resources": "Resources",
+  "workspacePanel.resources.empty": "No agent documents yet",
+  "workspacePanel.resources.error": "Failed to load resources",
+  "workspacePanel.resources.loading": "Loading resources...",
+  "workspacePanel.resources.previewError": "Failed to load preview",
+  "workspacePanel.resources.previewLoading": "Loading preview...",
   "you": "당신",
   "zenMode": "집중 모드"
 }

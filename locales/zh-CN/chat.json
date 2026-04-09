@@ -457,6 +457,15 @@
   "viewMode.fullWidth": "全宽显示",
   "viewMode.normal": "普通",
   "viewMode.wideScreen": "宽屏",
+  "workspacePanel.agentDocuments": "智能体文档",
+  "workspacePanel.progress": "进度",
+  "workspacePanel.progress.allCompleted": "全部任务已完成",
+  "workspacePanel.resources": "资源",
+  "workspacePanel.resources.empty": "暂无智能体文档",
+  "workspacePanel.resources.error": "资源加载失败",
+  "workspacePanel.resources.loading": "资源加载中...",
+  "workspacePanel.resources.previewError": "预览加载失败",
+  "workspacePanel.resources.previewLoading": "预览加载中...",
   "you": "你",
   "zenMode": "专注模式"
 }
