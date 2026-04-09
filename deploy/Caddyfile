@@ -1,0 +1,14 @@
+{$DOMAIN} {
+	# App principal
+	reverse_proxy lobe:3210
+
+	# Proxy S3/MinIO pour les fichiers uploades
+	handle_path /s3/* {
+		reverse_proxy minio:9000
+	}
+
+	# Casdoor auth (si acces externe necessaire)
+	handle_path /casdoor/* {
+		reverse_proxy casdoor:8000
+	}
+}

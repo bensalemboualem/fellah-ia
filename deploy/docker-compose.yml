@@ -1,0 +1,194 @@
+name: fellah-ia
+services:
+  postgresql:
+    image: pgvector/pgvector:pg17
+    container_name: fellah-postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${LOBE_DB_NAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - fellah
+
+  redis:
+    image: redis:7-alpine
+    container_name: fellah-redis
+    command: redis-server --save 60 1000 --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: always
+    networks:
+      - fellah
+
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    container_name: fellah-minio
+    volumes:
+      - s3_data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_API_CORS_ALLOW_ORIGIN: https://${DOMAIN}
+    command: server /data --console-address ":9001"
+    restart: always
+    networks:
+      - fellah
+
+  # Auto-create bucket on first start
+  minio-init:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+        sleep 5;
+        mc alias set myminio http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD};
+        mc mb --ignore-existing myminio/$${MINIO_LOBE_BUCKET};
+        mc anonymous set download myminio/$${MINIO_LOBE_BUCKET};
+        exit 0;
+      "
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_LOBE_BUCKET: ${MINIO_LOBE_BUCKET}
+    networks:
+      - fellah
+
+  casdoor:
+    image: casbin/casdoor:v2.13.0
+    container_name: fellah-casdoor
+    entrypoint: /bin/sh -c './server --createDatabase=true'
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      httpport: '8000'
+      RUNNING_IN_DOCKER: 'true'
+      driverName: postgres
+      dataSourceName: 'user=postgres password=${POSTGRES_PASSWORD} host=postgresql port=5432 sslmode=disable dbname=casdoor'
+      runmode: prod
+    volumes:
+      - ./init_data.json:/init_data.json
+    restart: always
+    networks:
+      - fellah
+
+  searxng:
+    image: searxng/searxng
+    container_name: fellah-searxng
+    volumes:
+      - ./searxng-settings.yml:/etc/searxng/settings.yml
+    restart: always
+    networks:
+      - fellah
+
+  lobe:
+    image: ghcr.io/${GHCR_USER}/lobe-chat:latest
+    container_name: fellah-app
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      casdoor:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    environment:
+      # Core
+      APP_URL: https://${DOMAIN}
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgresql:5432/${LOBE_DB_NAME}
+      DATABASE_DRIVER: node
+      KEY_VAULTS_SECRET: ${KEY_VAULTS_SECRET}
+      AUTH_SECRET: ${AUTH_SECRET}
+
+      # S3 — internal (container-to-container)
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: ${MINIO_LOBE_BUCKET}
+      S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
+      S3_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
+      S3_ENABLE_PATH_STYLE: '1'
+      S3_SET_ACL: '0'
+      S3_PUBLIC_DOMAIN: https://${DOMAIN}/s3
+      LLM_VISION_IMAGE_USE_BASE64: '1'
+
+      # Redis
+      REDIS_URL: redis://redis:6379
+      REDIS_PREFIX: fellah
+      REDIS_TLS: '0'
+
+      # Search
+      SEARXNG_URL: http://searxng:8080
+
+      # Auth SSO
+      AUTH_SSO_PROVIDERS: ${AUTH_SSO_PROVIDERS}
+      AUTH_GOOGLE_ID: ${AUTH_GOOGLE_ID}
+      AUTH_GOOGLE_SECRET: ${AUTH_GOOGLE_SECRET}
+      AUTH_GITHUB_ID: ${AUTH_GITHUB_ID}
+      AUTH_GITHUB_SECRET: ${AUTH_GITHUB_SECRET}
+      AUTH_CASDOOR_ISSUER: http://casdoor:8000
+
+      # AI Providers
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY}
+      COHERE_API_KEY: ${COHERE_API_KEY}
+      TOGETHERAI_API_KEY: ${TOGETHERAI_API_KEY}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+
+      # Ollama (si active sur le VPS)
+      ENABLED_OLLAMA: ${ENABLED_OLLAMA:-0}
+      OLLAMA_PROXY_URL: ${OLLAMA_PROXY_URL:-}
+
+      # Default Agent
+      DEFAULT_AGENT_CONFIG: ${DEFAULT_AGENT_CONFIG}
+
+      # RAG
+      DEFAULT_FILES_CONFIG: ${DEFAULT_FILES_CONFIG}
+    restart: always
+    networks:
+      - fellah
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: fellah-caddy
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - lobe
+      - minio
+    restart: always
+    networks:
+      - fellah
+
+volumes:
+  pgdata:
+  redis_data:
+  s3_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  fellah:
+    driver: bridge
