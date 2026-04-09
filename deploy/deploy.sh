@@ -14,12 +14,12 @@ source .env
 
 echo "=== Fellah IA — Deploiement ==="
 echo "Domaine: ${DOMAIN}"
-echo "Image:   ghcr.io/${GHCR_USER}/lobe-chat:latest"
+echo "Image:   ghcr.io/${GHCR_USER}/fellah-ia:latest"
 echo ""
 
 # Pull la derniere image
 echo ">>> Pull de l'image..."
-docker pull "ghcr.io/${GHCR_USER}/lobe-chat:latest"
+docker pull "ghcr.io/${GHCR_USER}/fellah-ia:latest"
 
 # Premier deploiement ou mise a jour ?
 if docker compose ps --quiet 2>/dev/null | grep -q .; then

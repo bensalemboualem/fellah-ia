@@ -54,7 +54,7 @@ nano .env
 ### 5. Login GHCR + pull
 ```bash
 echo "GITHUB_TOKEN" | docker login ghcr.io -u bensalemboualem --password-stdin
-docker pull ghcr.io/bensalemboualem/lobe-chat:latest
+docker pull ghcr.io/bensalemboualem/fellah-ia:latest
 ```
 
 ### 6. Lancer
@@ -75,7 +75,7 @@ curl -I https://fellah.iafactoryalgeria.com  # HTTP/2 200
 docker compose logs lobe -f --tail 100
 docker compose restart lobe
 docker compose exec postgresql pg_dump -U postgres fellah_ia > backup_$(date +%Y%m%d).sql
-docker pull ghcr.io/bensalemboualem/lobe-chat:latest && docker compose up -d --force-recreate --no-build lobe
+docker pull ghcr.io/bensalemboualem/fellah-ia:latest && docker compose up -d --force-recreate --no-build lobe
 ```
 
 ## Securite

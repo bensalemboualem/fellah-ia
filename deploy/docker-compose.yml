@@ -95,7 +95,7 @@ services:
       - fellah
 
   lobe:
-    image: ghcr.io/${GHCR_USER}/lobe-chat:latest
+    image: ghcr.io/${GHCR_USER}/fellah-ia:latest
     container_name: fellah-app
     depends_on:
       postgresql:
