@@ -1,13 +1,13 @@
-import { TextArea } from '@lobehub/ui';
+import { TextArea, type TextAreaProps } from '@lobehub/ui';
 import { type FC } from 'react';
 
-interface EditorCanvasProps {
+interface EditorCanvasProps extends Omit<TextAreaProps, 'onChange'> {
   defaultValue?: string;
   onChange?: (value: string) => void;
   value?: string;
 }
 
-const EditorCanvas: FC<EditorCanvasProps> = ({ defaultValue, value, onChange }) => {
+const EditorCanvas: FC<EditorCanvasProps> = ({ defaultValue, value, onChange, style, ...rest }) => {
   return (
     <TextArea
       defaultValue={defaultValue}
@@ -19,10 +19,12 @@ const EditorCanvas: FC<EditorCanvasProps> = ({ defaultValue, value, onChange }) 
         minHeight: '50vh',
         overflowY: 'auto',
         padding: 16,
+        ...style,
       }}
       onChange={(e) => {
         onChange?.(e.target.value);
       }}
+      {...rest}
     />
   );
 };

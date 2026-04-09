@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -10,7 +10,6 @@ vi.mock('@lobehub/ui', () => ({
   Flexbox: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => (
     <div {...props}>{children}</div>
   ),
-  Markdown: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
   Text: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
 }));
 
@@ -37,7 +36,6 @@ vi.mock('react-i18next', () => ({
 vi.mock('@/services/agentDocument', () => ({
   agentDocumentService: {
     getDocuments: vi.fn(),
-    readDocument: vi.fn(),
   },
 }));
 
@@ -71,7 +69,9 @@ describe('AgentDocumentsGroup', () => {
     useClientDataSWR.mockReset();
   });
 
-  it('renders documents and lazy-loads preview on selection', async () => {
+  it('renders documents and delegates selection to parent', async () => {
+    const onSelectDocument = vi.fn();
+
     useClientDataSWR.mockImplementation((key: unknown) => {
       if (Array.isArray(key) && key[0] === 'workspace-agent-documents') {
         return {
@@ -81,25 +81,14 @@ describe('AgentDocumentsGroup', () => {
         };
       }
 
-      if (Array.isArray(key) && key[0] === 'workspace-agent-document-preview') {
-        return {
-          data: { content: '# Brief', filename: 'brief.md', id: 'doc-1', title: 'Brief' },
-          error: undefined,
-          isLoading: false,
-        };
-      }
-
       return { data: undefined, error: undefined, isLoading: false };
     });
 
-    render(<AgentDocumentsGroup />);
+    render(<AgentDocumentsGroup selectedDocumentId={null} onSelectDocument={onSelectDocument} />);
 
-    expect(await screen.findByText('Brief')).toBeInTheDocument();
+    expect(await screen.findByText('brief.md')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('Brief'));
-
-    await waitFor(() => {
-      expect(screen.getByText('# Brief')).toBeInTheDocument();
-    });
+    fireEvent.click(screen.getByText('brief.md'));
+    expect(onSelectDocument).toHaveBeenCalledWith('doc-1');
   });
 });

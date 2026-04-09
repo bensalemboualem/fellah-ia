@@ -19,6 +19,9 @@ vi.mock('@lobehub/ui', () => ({
   Button: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => (
     <button {...props}>{children}</button>
   ),
+  Checkbox: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => (
+    <div {...props}>{children}</div>
+  ),
   DraggablePanel: ({ children, expand }: { children?: ReactNode; expand?: boolean }) => (
     <div data-expand={String(expand)} data-testid="right-panel">
       {children}
@@ -28,9 +31,12 @@ vi.mock('@lobehub/ui', () => ({
   Flexbox: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => (
     <div {...props}>{children}</div>
   ),
+  Icon: () => <div />,
   Markdown: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
   Progress: () => <div data-testid="workspace-progress-bar" />,
+  Tag: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
   Text: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
+  TextArea: () => <textarea />,
   TooltipGroup: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
 }));
 
@@ -87,6 +93,10 @@ vi.mock('../Header', () => ({
   default: () => <div>chat-header</div>,
 }));
 
+vi.mock('../AgentDocumentSidePanel', () => ({
+  default: () => null,
+}));
+
 beforeEach(() => {
   useClientDataSWR.mockImplementation(() => ({
     data: [],
@@ -126,7 +136,7 @@ describe('Conversation right panel mount', () => {
   });
 
   it('renders summary, progress, and resources sections in order', () => {
-    render(<AgentWorkspaceRightPanel />);
+    render(<AgentWorkspaceRightPanel selectedDocumentId={null} onSelectDocument={vi.fn()} />);
 
     const summary = screen.getByTestId('workspace-summary');
     const progress = screen.getByTestId('workspace-progress');
@@ -140,7 +150,7 @@ describe('Conversation right panel mount', () => {
   it('uses the localized untitled-agent fallback when the active agent has no title', () => {
     mockAgentMeta = { avatar: 'agent-avatar' };
 
-    render(<AgentWorkspaceRightPanel />);
+    render(<AgentWorkspaceRightPanel selectedDocumentId={null} onSelectDocument={vi.fn()} />);
 
     expect(screen.getByTestId('workspace-summary')).toHaveTextContent('Localized Untitled Agent');
   });

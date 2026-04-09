@@ -9,41 +9,51 @@ import AgentWorkspaceSummary from './AgentWorkspaceSummary';
 import ProgressSection from './ProgressSection';
 import ResourcesSection from './ResourcesSection';
 
-const AgentWorkspaceRightPanel = memo(() => {
-  useLayoutEffect(() => {
-    const { status } = useGlobalStore.getState();
-    const previousExpand = systemStatusSelectors.showRightPanel(useGlobalStore.getState());
+interface AgentWorkspaceRightPanelProps {
+  onSelectDocument: (id: string | null) => void;
+  selectedDocumentId: string | null;
+}
 
-    if (previousExpand) {
-      useGlobalStore.setState({
-        status: {
-          ...status,
-          showRightPanel: false,
-        },
-      });
-    }
+const AgentWorkspaceRightPanel = memo<AgentWorkspaceRightPanelProps>(
+  ({ onSelectDocument, selectedDocumentId }) => {
+    useLayoutEffect(() => {
+      const { status } = useGlobalStore.getState();
+      const previousExpand = systemStatusSelectors.showRightPanel(useGlobalStore.getState());
 
-    return () => {
       if (previousExpand) {
         useGlobalStore.setState({
           status: {
-            ...useGlobalStore.getState().status,
-            showRightPanel: true,
+            ...status,
+            showRightPanel: false,
           },
         });
       }
-    };
-  }, []);
 
-  return (
-    <RightPanel defaultWidth={360} maxWidth={520} minWidth={300}>
-      <Flexbox gap={8} height={'100%'} style={{ overflowY: 'auto' }} width={'100%'}>
-        <AgentWorkspaceSummary />
-        <ProgressSection />
-        <ResourcesSection />
-      </Flexbox>
-    </RightPanel>
-  );
-});
+      return () => {
+        if (previousExpand) {
+          useGlobalStore.setState({
+            status: {
+              ...useGlobalStore.getState().status,
+              showRightPanel: true,
+            },
+          });
+        }
+      };
+    }, []);
+
+    return (
+      <RightPanel defaultWidth={360} maxWidth={520} minWidth={300}>
+        <Flexbox gap={8} height={'100%'} style={{ overflowY: 'auto' }} width={'100%'}>
+          <AgentWorkspaceSummary />
+          <ProgressSection />
+          <ResourcesSection
+            selectedDocumentId={selectedDocumentId}
+            onSelectDocument={onSelectDocument}
+          />
+        </Flexbox>
+      </RightPanel>
+    );
+  },
+);
 
 export default AgentWorkspaceRightPanel;

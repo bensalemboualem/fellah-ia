@@ -1,5 +1,5 @@
 import { Flexbox, TooltipGroup } from '@lobehub/ui';
-import React, { memo, Suspense } from 'react';
+import React, { memo, Suspense, useEffect, useState } from 'react';
 
 import DragUploadZone, { useUploadFiles } from '@/components/DragUploadZone';
 import Loading from '@/components/Loading/BrandTextLoading';
@@ -8,6 +8,7 @@ import { agentSelectors } from '@/store/agent/selectors';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 
+import AgentDocumentSidePanel from './AgentDocumentSidePanel';
 import ConversationArea from './ConversationArea';
 import ChatHeader from './Header';
 import AgentWorkspaceRightPanel from './RightPanel';
@@ -20,11 +21,17 @@ const wrapperStyle: React.CSSProperties = {
 
 const ChatConversation = memo(() => {
   const showHeader = useGlobalStore(systemStatusSelectors.showChatHeader);
+  const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
+  const activeAgentId = useAgentStore((s) => s.activeAgentId);
 
   // Get current agent's model info for vision support check
   const model = useAgentStore(agentSelectors.currentAgentModel);
   const provider = useAgentStore(agentSelectors.currentAgentModelProvider);
   const { handleUploadFiles } = useUploadFiles({ model, provider });
+
+  useEffect(() => {
+    setSelectedDocumentId(null);
+  }, [activeAgentId]);
 
   return (
     <Suspense fallback={<Loading debugId="Agent > ChatConversation" />}>
@@ -41,7 +48,14 @@ const ChatConversation = memo(() => {
               <ConversationArea />
             </TooltipGroup>
           </Flexbox>
-          <AgentWorkspaceRightPanel />
+          <AgentDocumentSidePanel
+            selectedDocumentId={selectedDocumentId}
+            onClose={() => setSelectedDocumentId(null)}
+          />
+          <AgentWorkspaceRightPanel
+            selectedDocumentId={selectedDocumentId}
+            onSelectDocument={setSelectedDocumentId}
+          />
         </Flexbox>
       </DragUploadZone>
     </Suspense>

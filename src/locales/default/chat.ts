@@ -508,6 +508,13 @@ export default {
   'workspacePanel.resources.loading': 'Loading resources...',
   'workspacePanel.resources.previewError': 'Failed to load preview',
   'workspacePanel.resources.previewLoading': 'Loading preview...',
+  'workspacePanel.documents.close': 'Close',
+  'workspacePanel.documents.error': 'Failed to load document',
+  'workspacePanel.documents.loading': 'Loading document...',
+  'workspacePanel.documents.save': 'Save',
+  'workspacePanel.documents.saved': 'All changes saved',
+  'workspacePanel.documents.title': 'Document',
+  'workspacePanel.documents.unsaved': 'Unsaved changes',
   'you': 'You',
   'zenMode': 'Zen Mode',
 };
