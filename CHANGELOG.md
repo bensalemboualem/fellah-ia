@@ -110,7 +110,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: Docker deploy REDIS_URL check, fix sub task issue.
+- **misc**: Docker deploy REDIS\_URL check, fix sub task issue.
 
 <br/>
 
@@ -119,7 +119,7 @@
 
 #### What's fixed
 
-- **misc**: Docker deploy REDIS_URL check, closes [#11773](https://github.com/lobehub/lobe-chat/issues/11773) ([a9702bf](https://github.com/lobehub/lobe-chat/commit/a9702bf))
+- **misc**: Docker deploy REDIS\_URL check, closes [#11773](https://github.com/lobehub/lobe-chat/issues/11773) ([a9702bf](https://github.com/lobehub/lobe-chat/commit/a9702bf))
 - **misc**: Fix sub task issue, closes [#11777](https://github.com/lobehub/lobe-chat/issues/11777) ([8ae3456](https://github.com/lobehub/lobe-chat/commit/8ae3456))
 
 </details>
@@ -1114,7 +1114,7 @@
 
 #### ♻ Code Refactoring
 
-- **auth**: Remove NEXT_PUBLIC_AUTH_URL env variable.
+- **auth**: Remove NEXT\_PUBLIC\_AUTH\_URL env variable.
 
 #### 🐛 Bug Fixes
 
@@ -1127,7 +1127,7 @@
 
 #### Code refactoring
 
-- **auth**: Remove NEXT_PUBLIC_AUTH_URL env variable, closes [#11658](https://github.com/lobehub/lobe-chat/issues/11658) ([c0f9875](https://github.com/lobehub/lobe-chat/commit/c0f9875))
+- **auth**: Remove NEXT\_PUBLIC\_AUTH\_URL env variable, closes [#11658](https://github.com/lobehub/lobe-chat/issues/11658) ([c0f9875](https://github.com/lobehub/lobe-chat/commit/c0f9875))
 
 #### What's fixed
 
@@ -2266,11 +2266,11 @@
 
 #### ♻ Code Refactoring
 
-- **desktop**: Unify TITLE_BAR_HEIGHT constant to desktop-bridge.
+- **desktop**: Unify TITLE\_BAR\_HEIGHT constant to desktop-bridge.
 
 #### 🐛 Bug Fixes
 
-- **desktop**: Return OFFICIAL_URL in cloud mode for remoteServerUrl selector.
+- **desktop**: Return OFFICIAL\_URL in cloud mode for remoteServerUrl selector.
 
 <br/>
 
@@ -2279,11 +2279,11 @@
 
 #### Code refactoring
 
-- **desktop**: Unify TITLE_BAR_HEIGHT constant to desktop-bridge, closes [#11496](https://github.com/lobehub/lobe-chat/issues/11496) ([e7739e5](https://github.com/lobehub/lobe-chat/commit/e7739e5))
+- **desktop**: Unify TITLE\_BAR\_HEIGHT constant to desktop-bridge, closes [#11496](https://github.com/lobehub/lobe-chat/issues/11496) ([e7739e5](https://github.com/lobehub/lobe-chat/commit/e7739e5))
 
 #### What's fixed
 
-- **desktop**: Return OFFICIAL_URL in cloud mode for remoteServerUrl selector, closes [#11502](https://github.com/lobehub/lobe-chat/issues/11502) ([1d11fac](https://github.com/lobehub/lobe-chat/commit/1d11fac))
+- **desktop**: Return OFFICIAL\_URL in cloud mode for remoteServerUrl selector, closes [#11502](https://github.com/lobehub/lobe-chat/issues/11502) ([1d11fac](https://github.com/lobehub/lobe-chat/commit/1d11fac))
 
 </details>
 
@@ -2768,7 +2768,7 @@
 
 #### ♻ Code Refactoring
 
-- **agentGroup**: Simplify LobeChatGroupChatConfig schema.
+- **agentGroup**: Simplify IA FactoryGroupChatConfig schema.
 
 <br/>
 
@@ -2777,7 +2777,7 @@
 
 #### Code refactoring
 
-- **agentGroup**: Simplify LobeChatGroupChatConfig schema, closes [#11431](https://github.com/lobehub/lobe-chat/issues/11431) ([a8c6b2c](https://github.com/lobehub/lobe-chat/commit/a8c6b2c))
+- **agentGroup**: Simplify IA FactoryGroupChatConfig schema, closes [#11431](https://github.com/lobehub/lobe-chat/issues/11431) ([a8c6b2c](https://github.com/lobehub/lobe-chat/commit/a8c6b2c))
 
 </details>
 
@@ -3546,7 +3546,7 @@
 
 #### ✨ Features
 
-- **misc**: Change the klavis Linear to LobeHub oauth Linear.
+- **misc**: Change the klavis Linear to IA Factory Hub oauth Linear.
 
 #### 🐛 Bug Fixes
 
@@ -3559,7 +3559,7 @@
 
 #### What's improved
 
-- **misc**: Change the klavis Linear to LobeHub oauth Linear, closes [#11339](https://github.com/lobehub/lobe-chat/issues/11339) ([ec8ff26](https://github.com/lobehub/lobe-chat/commit/ec8ff26))
+- **misc**: Change the klavis Linear to IA Factory Hub oauth Linear, closes [#11339](https://github.com/lobehub/lobe-chat/issues/11339) ([ec8ff26](https://github.com/lobehub/lobe-chat/commit/ec8ff26))
 
 #### What's fixed
 
@@ -4304,7 +4304,7 @@
 
 #### 🐛 Bug Fixes
 
-- **model-runtime**: Handle Qwen tool_calls without initial arguments.
+- **model-runtime**: Handle Qwen tool\_calls without initial arguments.
 
 <br/>
 
@@ -4313,7 +4313,7 @@
 
 #### What's fixed
 
-- **model-runtime**: Handle Qwen tool_calls without initial arguments, closes [#11211](https://github.com/lobehub/lobe-chat/issues/11211) ([5321d91](https://github.com/lobehub/lobe-chat/commit/5321d91))
+- **model-runtime**: Handle Qwen tool\_calls without initial arguments, closes [#11211](https://github.com/lobehub/lobe-chat/issues/11211) ([5321d91](https://github.com/lobehub/lobe-chat/commit/5321d91))
 
 </details>
 
@@ -5064,7 +5064,7 @@
 - **prebuild**: Correct syntax in partialBuildPages array.
 - **translation**: Add fallback for all English locale variants.
 - **userMemories**: 404/405 issue due to incorrectly used workflow name and mounted catch-all route, missing base memory as part of context, must assign workflow id, should use `context.invoke` for workflow instead of `context.run`, skip to handle WorkflowAbort, use date & time for building context, workflow id build issue.
-- **misc**: Agent profiles update, agent tools config set, editor placeholder, bump charts 3.0.4 to fix import es path, fix anthropic thinking budget, fix async task and improve tool style, fix default waitlist bug, fix delete agent group bug, Fix desktop test cases and refactor translations, Fix desktop test cases and refactor translations, fix gemini 3 model thinking issue, fix gemini 3 pro parallel tool use, fix gemini 3 thinking params, fix identity memory not working, fix supervisor flag, fix thread not working issue, fix when use branch topic,the branch index error problem, fixed the welcome card the create button not work, handle session invalidation on 401 error by logging out signed-in users, improve test infrastructure and mock configurations, locale resolve bug with ESM module loading, page agent editor, prevent redundant login redirect when already on auth pages, redis read json object, remove openapi pkg patch file, slove input editor on pause emit, slove swr mutate not work in Cache Provider, slove the group add member checkbox not work, slove the model select null problem, slove the mutate not work problem, slove when click agentbuilder should clean topic, slove when first call thread, not show ai chat message, support retry error message and fix continueGenerationMessage, update contextMenu in group tools message, update OFFICIAL_URL to app.lobehub.com, update PlanTag link paths for subscription settings, update test snapshots for model description changes, when use agentbuilder the topic id should use new & clear topic….
+- **misc**: Agent profiles update, agent tools config set, editor placeholder, bump charts 3.0.4 to fix import es path, fix anthropic thinking budget, fix async task and improve tool style, fix default waitlist bug, fix delete agent group bug, Fix desktop test cases and refactor translations, Fix desktop test cases and refactor translations, fix gemini 3 model thinking issue, fix gemini 3 pro parallel tool use, fix gemini 3 thinking params, fix identity memory not working, fix supervisor flag, fix thread not working issue, fix when use branch topic,the branch index error problem, fixed the welcome card the create button not work, handle session invalidation on 401 error by logging out signed-in users, improve test infrastructure and mock configurations, locale resolve bug with ESM module loading, page agent editor, prevent redundant login redirect when already on auth pages, redis read json object, remove openapi pkg patch file, slove input editor on pause emit, slove swr mutate not work in Cache Provider, slove the group add member checkbox not work, slove the model select null problem, slove the mutate not work problem, slove when click agentbuilder should clean topic, slove when first call thread, not show ai chat message, support retry error message and fix continueGenerationMessage, update contextMenu in group tools message, update OFFICIAL\_URL to app.lobehub.com, update PlanTag link paths for subscription settings, update test snapshots for model description changes, when use agentbuilder the topic id should use new & clear topic….
 
 #### 💄 Styles
 
@@ -5236,7 +5236,7 @@
 - **misc**: Slove when first call thread, not show ai chat message, closes [#10878](https://github.com/lobehub/lobe-chat/issues/10878) ([5a79cb9](https://github.com/lobehub/lobe-chat/commit/5a79cb9))
 - **misc**: Support retry error message and fix continueGenerationMessage ([8bf85fb](https://github.com/lobehub/lobe-chat/commit/8bf85fb))
 - **misc**: Update contextMenu in group tools message, closes [#11056](https://github.com/lobehub/lobe-chat/issues/11056) ([8b49414](https://github.com/lobehub/lobe-chat/commit/8b49414))
-- **misc**: Update OFFICIAL_URL to app.lobehub.com, closes [#11015](https://github.com/lobehub/lobe-chat/issues/11015) ([f9e11d0](https://github.com/lobehub/lobe-chat/commit/f9e11d0))
+- **misc**: Update OFFICIAL\_URL to app.lobehub.com, closes [#11015](https://github.com/lobehub/lobe-chat/issues/11015) ([f9e11d0](https://github.com/lobehub/lobe-chat/commit/f9e11d0))
 - **misc**: Update PlanTag link paths for subscription settings ([ada71d3](https://github.com/lobehub/lobe-chat/commit/ada71d3))
 - **misc**: Update test snapshots for model description changes, closes [#11008](https://github.com/lobehub/lobe-chat/issues/11008) ([626e808](https://github.com/lobehub/lobe-chat/commit/626e808))
 - **misc**: When use agentbuilder the topic id should use new & clear topic…, closes [#10983](https://github.com/lobehub/lobe-chat/issues/10983) ([0b2b096](https://github.com/lobehub/lobe-chat/commit/0b2b096))
@@ -6385,7 +6385,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: Betterauth public url auto detect from VERCEL_URL.
+- **misc**: Betterauth public url auto detect from VERCEL\_URL.
 
 <br/>
 
@@ -6394,7 +6394,7 @@
 
 #### What's fixed
 
-- **misc**: Betterauth public url auto detect from VERCEL_URL, closes [#10493](https://github.com/lobehub/lobe-chat/issues/10493) ([b5bf8ad](https://github.com/lobehub/lobe-chat/commit/b5bf8ad))
+- **misc**: Betterauth public url auto detect from VERCEL\_URL, closes [#10493](https://github.com/lobehub/lobe-chat/issues/10493) ([b5bf8ad](https://github.com/lobehub/lobe-chat/commit/b5bf8ad))
 
 </details>
 
@@ -9715,7 +9715,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: Hide marketplace link from Plugin List when market disabled, OIDC error when connecting to self-host instance, only include input_fidelity parameter for gpt-image-1..
+- **misc**: Hide marketplace link from Plugin List when market disabled, OIDC error when connecting to self-host instance, only include input\_fidelity parameter for gpt-image-1..
 
 <br/>
 
@@ -9726,7 +9726,7 @@
 
 - **misc**: Hide marketplace link from Plugin List when market disabled, closes [#9929](https://github.com/lobehub/lobe-chat/issues/9929) ([e303979](https://github.com/lobehub/lobe-chat/commit/e303979))
 - **misc**: OIDC error when connecting to self-host instance, closes [#9916](https://github.com/lobehub/lobe-chat/issues/9916) ([7a2ca19](https://github.com/lobehub/lobe-chat/commit/7a2ca19))
-- **misc**: Only include input_fidelity parameter for gpt-image-1., closes [#9920](https://github.com/lobehub/lobe-chat/issues/9920) ([65dbc63](https://github.com/lobehub/lobe-chat/commit/65dbc63))
+- **misc**: Only include input\_fidelity parameter for gpt-image-1., closes [#9920](https://github.com/lobehub/lobe-chat/issues/9920) ([65dbc63](https://github.com/lobehub/lobe-chat/commit/65dbc63))
 
 </details>
 
@@ -11084,7 +11084,7 @@
 
 #### 🐛 Bug Fixes
 
-- **provider**: Add deepseek-v3.1-terminus to THINKING_MODELS.
+- **provider**: Add deepseek-v3.1-terminus to THINKING\_MODELS.
 
 <br/>
 
@@ -11093,7 +11093,7 @@
 
 #### What's fixed
 
-- **provider**: Add deepseek-v3.1-terminus to THINKING_MODELS, closes [#9653](https://github.com/lobehub/lobe-chat/issues/9653) [#9648](https://github.com/lobehub/lobe-chat/issues/9648) ([e9b5c69](https://github.com/lobehub/lobe-chat/commit/e9b5c69))
+- **provider**: Add deepseek-v3.1-terminus to THINKING\_MODELS, closes [#9653](https://github.com/lobehub/lobe-chat/issues/9653) [#9648](https://github.com/lobehub/lobe-chat/issues/9648) ([e9b5c69](https://github.com/lobehub/lobe-chat/commit/e9b5c69))
 
 </details>
 
@@ -12396,7 +12396,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: Update Responses search tool to web_search.
+- **misc**: Update Responses search tool to web\_search.
 
 <br/>
 
@@ -12405,7 +12405,7 @@
 
 #### What's fixed
 
-- **misc**: Update Responses search tool to web_search, closes [#9354](https://github.com/lobehub/lobe-chat/issues/9354) ([58d34ff](https://github.com/lobehub/lobe-chat/commit/58d34ff))
+- **misc**: Update Responses search tool to web\_search, closes [#9354](https://github.com/lobehub/lobe-chat/issues/9354) ([58d34ff](https://github.com/lobehub/lobe-chat/commit/58d34ff))
 
 </details>
 
@@ -14677,7 +14677,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: Support Grok thinking models in AiHubMix, The 'stream_options' parameter is only allowed when 'stream' is enabled.
+- **misc**: Support Grok thinking models in AiHubMix, The 'stream\_options' parameter is only allowed when 'stream' is enabled.
 
 <br/>
 
@@ -14687,7 +14687,7 @@
 #### What's fixed
 
 - **misc**: Support Grok thinking models in AiHubMix, closes [#8713](https://github.com/lobehub/lobe-chat/issues/8713) ([ffa9b1b](https://github.com/lobehub/lobe-chat/commit/ffa9b1b))
-- **misc**: The 'stream_options' parameter is only allowed when 'stream' is enabled, closes [#8778](https://github.com/lobehub/lobe-chat/issues/8778) ([fcc32d5](https://github.com/lobehub/lobe-chat/commit/fcc32d5))
+- **misc**: The 'stream\_options' parameter is only allowed when 'stream' is enabled, closes [#8778](https://github.com/lobehub/lobe-chat/issues/8778) ([fcc32d5](https://github.com/lobehub/lobe-chat/commit/fcc32d5))
 
 </details>
 
@@ -14904,7 +14904,7 @@
 
 #### ✨ Features
 
-- **feature-flags**: Add ai_image flag to control AI painting UI.
+- **feature-flags**: Add ai\_image flag to control AI painting UI.
 
 <br/>
 
@@ -14913,7 +14913,7 @@
 
 #### What's improved
 
-- **feature-flags**: Add ai_image flag to control AI painting UI, closes [#8797](https://github.com/lobehub/lobe-chat/issues/8797) ([a1c66c8](https://github.com/lobehub/lobe-chat/commit/a1c66c8))
+- **feature-flags**: Add ai\_image flag to control AI painting UI, closes [#8797](https://github.com/lobehub/lobe-chat/issues/8797) ([a1c66c8](https://github.com/lobehub/lobe-chat/commit/a1c66c8))
 
 </details>
 
@@ -18997,7 +18997,7 @@
 
 #### 💄 Styles
 
-- **misc**: Enhanced reasoning_effort Slider Component, Update Hunyuan models & deepseek-r1-0528.
+- **misc**: Enhanced reasoning\_effort Slider Component, Update Hunyuan models & deepseek-r1-0528.
 
 <br/>
 
@@ -19006,7 +19006,7 @@
 
 #### Styles
 
-- **misc**: Enhanced reasoning_effort Slider Component, closes [#7998](https://github.com/lobehub/lobe-chat/issues/7998) ([750b26a](https://github.com/lobehub/lobe-chat/commit/750b26a))
+- **misc**: Enhanced reasoning\_effort Slider Component, closes [#7998](https://github.com/lobehub/lobe-chat/issues/7998) ([750b26a](https://github.com/lobehub/lobe-chat/commit/750b26a))
 - **misc**: Update Hunyuan models & deepseek-r1-0528, closes [#7993](https://github.com/lobehub/lobe-chat/issues/7993) ([2eb198c](https://github.com/lobehub/lobe-chat/commit/2eb198c))
 
 </details>
@@ -19617,7 +19617,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: 'top_p' is not supported with o4-mini, pin zustand version to avoid type error.
+- **misc**: 'top\_p' is not supported with o4-mini, pin zustand version to avoid type error.
 
 <br/>
 
@@ -19626,7 +19626,7 @@
 
 #### What's fixed
 
-- **misc**: 'top_p' is not supported with o4-mini, closes [#7747](https://github.com/lobehub/lobe-chat/issues/7747) ([4e04399](https://github.com/lobehub/lobe-chat/commit/4e04399))
+- **misc**: 'top\_p' is not supported with o4-mini, closes [#7747](https://github.com/lobehub/lobe-chat/issues/7747) ([4e04399](https://github.com/lobehub/lobe-chat/commit/4e04399))
 - **misc**: Pin zustand version to avoid type error, closes [#7929](https://github.com/lobehub/lobe-chat/issues/7929) ([4f6e286](https://github.com/lobehub/lobe-chat/commit/4f6e286))
 
 </details>
@@ -22970,7 +22970,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: Set max_completion_tokens to undefined for Azure OpenAI.
+- **misc**: Set max\_completion\_tokens to undefined for Azure OpenAI.
 
 <br/>
 
@@ -22979,7 +22979,7 @@
 
 #### What's fixed
 
-- **misc**: Set max_completion_tokens to undefined for Azure OpenAI, closes [#7114](https://github.com/lobehub/lobe-chat/issues/7114) ([30b66b9](https://github.com/lobehub/lobe-chat/commit/30b66b9))
+- **misc**: Set max\_completion\_tokens to undefined for Azure OpenAI, closes [#7114](https://github.com/lobehub/lobe-chat/issues/7114) ([30b66b9](https://github.com/lobehub/lobe-chat/commit/30b66b9))
 
 </details>
 
@@ -25601,7 +25601,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: Match o1 series models more robust in Azure OpenAI provider, set max_completion_tokens to null for Azure OpenAI.
+- **misc**: Match o1 series models more robust in Azure OpenAI provider, set max\_completion\_tokens to null for Azure OpenAI.
 
 <br/>
 
@@ -25611,7 +25611,7 @@
 #### What's fixed
 
 - **misc**: Match o1 series models more robust in Azure OpenAI provider, closes [#6193](https://github.com/lobehub/lobe-chat/issues/6193) ([f444e66](https://github.com/lobehub/lobe-chat/commit/f444e66))
-- **misc**: Set max_completion_tokens to null for Azure OpenAI, closes [#6198](https://github.com/lobehub/lobe-chat/issues/6198) ([e9e8da4](https://github.com/lobehub/lobe-chat/commit/e9e8da4))
+- **misc**: Set max\_completion\_tokens to null for Azure OpenAI, closes [#6198](https://github.com/lobehub/lobe-chat/issues/6198) ([e9e8da4](https://github.com/lobehub/lobe-chat/commit/e9e8da4))
 
 </details>
 
@@ -29527,7 +29527,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: Fix custom max_token not saved from customModelCards.
+- **misc**: Fix custom max\_token not saved from customModelCards.
 
 <br/>
 
@@ -29536,7 +29536,7 @@
 
 #### What's fixed
 
-- **misc**: Fix custom max_token not saved from customModelCards, closes [#5226](https://github.com/lobehub/lobe-chat/issues/5226) ([ab6d17c](https://github.com/lobehub/lobe-chat/commit/ab6d17c))
+- **misc**: Fix custom max\_token not saved from customModelCards, closes [#5226](https://github.com/lobehub/lobe-chat/issues/5226) ([ab6d17c](https://github.com/lobehub/lobe-chat/commit/ab6d17c))
 
 </details>
 
@@ -32069,7 +32069,7 @@
 
 #### ♻ Code Refactoring
 
-- **misc**: `genServerLLMConfig` function, get \*\_MODEL_LIST from env.
+- **misc**: `genServerLLMConfig` function, get \*\_MODEL\_LIST from env.
 
 <br/>
 
@@ -32078,7 +32078,7 @@
 
 #### Code refactoring
 
-- **misc**: `genServerLLMConfig` function, get \*\_MODEL_LIST from env, closes [#4694](https://github.com/lobehub/lobe-chat/issues/4694) ([d84f369](https://github.com/lobehub/lobe-chat/commit/d84f369))
+- **misc**: `genServerLLMConfig` function, get \*\_MODEL\_LIST from env, closes [#4694](https://github.com/lobehub/lobe-chat/issues/4694) ([d84f369](https://github.com/lobehub/lobe-chat/commit/d84f369))
 
 </details>
 
@@ -32794,7 +32794,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: Fix duplicate key value violates unique constraint "slug_user_id_unique" when create inbox session.
+- **misc**: Fix duplicate key value violates unique constraint "slug\_user\_id\_unique" when create inbox session.
 
 <br/>
 
@@ -32803,7 +32803,7 @@
 
 #### What's fixed
 
-- **misc**: Fix duplicate key value violates unique constraint "slug_user_id_unique" when create inbox session, closes [#4596](https://github.com/lobehub/lobe-chat/issues/4596) ([c5af96e](https://github.com/lobehub/lobe-chat/commit/c5af96e))
+- **misc**: Fix duplicate key value violates unique constraint "slug\_user\_id\_unique" when create inbox session, closes [#4596](https://github.com/lobehub/lobe-chat/issues/4596) ([c5af96e](https://github.com/lobehub/lobe-chat/commit/c5af96e))
 
 </details>
 
@@ -40343,7 +40343,7 @@
 
 #### 🐛 Bug Fixes
 
-- **misc**: -check_updates cannot be set by FEATURE_FLAGS.
+- **misc**: -check\_updates cannot be set by FEATURE\_FLAGS.
 
 <br/>
 
@@ -40352,7 +40352,7 @@
 
 #### What's fixed
 
-- **misc**: -check_updates cannot be set by FEATURE_FLAGS, closes [#3038](https://github.com/lobehub/lobe-chat/issues/3038) ([bdadfee](https://github.com/lobehub/lobe-chat/commit/bdadfee))
+- **misc**: -check\_updates cannot be set by FEATURE\_FLAGS, closes [#3038](https://github.com/lobehub/lobe-chat/issues/3038) ([bdadfee](https://github.com/lobehub/lobe-chat/commit/bdadfee))
 
 </details>
 
@@ -41053,7 +41053,7 @@
 
 #### ✨ Features
 
-- **misc**: Release LobeChat 1.0.
+- **misc**: Release IA Factory 1.0.
 
 #### 🔧 Chores
 
@@ -41066,7 +41066,7 @@
 
 #### What's improved
 
-- **misc**: Release LobeChat 1.0, closes [#2897](https://github.com/lobehub/lobe-chat/issues/2897) ([97bb377](https://github.com/lobehub/lobe-chat/commit/97bb377))
+- **misc**: Release IA Factory 1.0, closes [#2897](https://github.com/lobehub/lobe-chat/issues/2897) ([97bb377](https://github.com/lobehub/lobe-chat/commit/97bb377))
 
 #### Chores
 

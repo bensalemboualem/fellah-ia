@@ -102,7 +102,7 @@ Extract information from the issue template and content:
 
 #### f) Hosting Platform (select ONE)
 
-- `hosting:cloud` - Official LobeHub Cloud
+- `hosting:cloud` - Official IA Factory Hub Cloud
 - `hosting:self-host` - Self-hosted deployment
 - `hosting:vercel` - Vercel deployment
 - `hosting:zeabur` - Zeabur deployment

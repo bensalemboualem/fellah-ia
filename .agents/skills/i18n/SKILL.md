@@ -31,11 +31,13 @@ export default {
 **Patterns:** `{feature}.{context}.{action|status}`
 
 **Parameters:** Use `{{variableName}}` syntax
+
 ```typescript
 'alert.cloud.desc': '我们提供 {{credit}} 额度积分',
 ```
 
 **Avoid key conflicts:**
+
 ```typescript
 // ❌ Conflict
 'clientDB.solve': '自助解决',

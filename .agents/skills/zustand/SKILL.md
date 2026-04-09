@@ -8,29 +8,37 @@ description: Zustand state management guide. Use when working with store code (s
 ## Action Type Hierarchy
 
 ### 1. Public Actions
+
 Main interfaces for UI components:
+
 - Naming: Verb form (`createTopic`, `sendMessage`)
 - Responsibilities: Parameter validation, flow orchestration
 
 ### 2. Internal Actions (`internal_*`)
+
 Core business logic implementation:
+
 - Naming: `internal_` prefix (`internal_createTopic`)
 - Responsibilities: Optimistic updates, service calls, error handling
 - Should not be called directly by UI
 
 ### 3. Dispatch Methods (`internal_dispatch*`)
+
 State update handlers:
+
 - Naming: `internal_dispatch` + entity (`internal_dispatchTopic`)
 - Responsibilities: Calling reducers, updating store
 
 ## When to Use Reducer vs Simple `set`
 
 **Use Reducer Pattern:**
+
 - Managing object lists/maps (`messagesMap`, `topicMaps`)
 - Optimistic updates
 - Complex state transitions
 
 **Use Simple `set`:**
+
 - Toggling booleans
 - Updating simple values
 - Setting single state fields
@@ -61,12 +69,14 @@ internal_createTopic: async (params) => {
 ## Naming Conventions
 
 **Actions:**
+
 - Public: `createTopic`, `sendMessage`
 - Internal: `internal_createTopic`, `internal_updateMessageContent`
 - Dispatch: `internal_dispatchTopic`
 - Toggle: `internal_toggleMessageLoading`
 
 **State:**
+
 - ID arrays: `messageLoadingIds`, `topicEditingIds`
 - Maps: `topicMaps`, `messagesMap`
 - Active: `activeTopicId`

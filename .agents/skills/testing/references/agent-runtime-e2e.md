@@ -6,13 +6,14 @@
 
 Only mock **three external dependencies**:
 
-| Dependency | Mock | Description |
-|------------|------|-------------|
-| Database | PGLite | In-memory database from `@lobechat/database/test-utils` |
-| Redis | InMemoryAgentStateManager | Memory implementation |
-| Redis | InMemoryStreamEventManager | Memory implementation |
+| Dependency | Mock                       | Description                                             |
+| ---------- | -------------------------- | ------------------------------------------------------- |
+| Database   | PGLite                     | In-memory database from `@lobechat/database/test-utils` |
+| Redis      | InMemoryAgentStateManager  | Memory implementation                                   |
+| Redis      | InMemoryStreamEventManager | Memory implementation                                   |
 
 **NOT mocked:**
+
 - `model-bank` - Uses real model config
 - `Mecha` (AgentToolsEngine, ContextEngineering)
 - `AgentRuntimeService`
@@ -21,6 +22,7 @@ Only mock **three external dependencies**:
 ### Use vi.spyOn, not vi.mock
 
 Different tests need different LLM responses. `vi.spyOn` provides:
+
 - Flexible return values per test
 - Easy testing of different scenarios
 - Better test isolation
