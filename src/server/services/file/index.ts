@@ -25,7 +25,7 @@ export class FileService {
   constructor(db: LobeChatDatabase, userId: string) {
     this.userId = userId;
     this.fileModel = new FileModel(db, userId);
-    this.impl = createFileServiceModule(db);
+    this.impl = createFileServiceModule(db, userId);
   }
 
   /**

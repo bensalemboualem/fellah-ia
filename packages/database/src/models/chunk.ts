@@ -56,7 +56,7 @@ export class ChunkModel {
       .select({ chunkId: chunks.id })
       .from(chunks)
       .leftJoin(fileChunks, eq(chunks.id, fileChunks.chunkId))
-      .where(isNull(fileChunks.fileId));
+      .where(and(isNull(fileChunks.fileId), eq(chunks.userId, this.userId)));
 
     const ids = orphanedChunks.map((chunk) => chunk.chunkId);
     if (ids.length === 0) return;
@@ -74,7 +74,7 @@ export class ChunkModel {
 
   findById = async (id: string) => {
     return this.db.query.chunks.findFirst({
-      where: and(eq(chunks.id, id)),
+      where: and(eq(chunks.id, id), eq(chunks.userId, this.userId)),
     });
   };
 
@@ -109,7 +109,7 @@ export class ChunkModel {
       .select()
       .from(chunks)
       .innerJoin(fileChunks, eq(chunks.id, fileChunks.chunkId))
-      .where(eq(fileChunks.fileId, id));
+      .where(and(eq(fileChunks.fileId, id), eq(chunks.userId, this.userId)));
 
     return data
       .map((item) => item.chunks)
@@ -126,7 +126,7 @@ export class ChunkModel {
         id: fileChunks.fileId,
       })
       .from(fileChunks)
-      .where(inArray(fileChunks.fileId, ids))
+      .where(and(inArray(fileChunks.fileId, ids), eq(fileChunks.userId, this.userId)))
       .groupBy(fileChunks.fileId);
   };
 
@@ -137,7 +137,7 @@ export class ChunkModel {
         id: fileChunks.fileId,
       })
       .from(fileChunks)
-      .where(eq(fileChunks.fileId, ids))
+      .where(and(eq(fileChunks.fileId, ids), eq(fileChunks.userId, this.userId)))
       .groupBy(fileChunks.fileId);
 
     return data[0]?.count ?? 0;
@@ -168,7 +168,15 @@ export class ChunkModel {
       .leftJoin(embeddings, eq(chunks.id, embeddings.chunkId))
       .leftJoin(fileChunks, eq(chunks.id, fileChunks.chunkId))
       .leftJoin(files, eq(fileChunks.fileId, files.id))
-      .where(fileIds ? inArray(fileChunks.fileId, fileIds) : undefined)
+      .where(
+        and(
+          eq(chunks.userId, this.userId),
+          eq(embeddings.userId, this.userId),
+          fileIds ? eq(fileChunks.userId, this.userId) : undefined,
+          fileIds ? eq(files.userId, this.userId) : undefined,
+          fileIds ? inArray(fileChunks.fileId, fileIds) : undefined,
+        ),
+      )
       .orderBy((t) => desc(t.similarity))
       .limit(30);
 
@@ -209,7 +217,15 @@ export class ChunkModel {
       .leftJoin(embeddings, eq(chunks.id, embeddings.chunkId))
       .leftJoin(fileChunks, eq(chunks.id, fileChunks.chunkId))
       .leftJoin(files, eq(files.id, fileChunks.fileId))
-      .where(inArray(fileChunks.fileId, fileIds))
+      .where(
+        and(
+          eq(chunks.userId, this.userId),
+          eq(embeddings.userId, this.userId),
+          eq(fileChunks.userId, this.userId),
+          eq(files.userId, this.userId),
+          inArray(fileChunks.fileId, fileIds),
+        ),
+      )
       .orderBy((t) => desc(t.similarity))
       // Relaxed to 15 for now
       .limit(topK);

@@ -468,4 +468,36 @@ describe('KnowledgeBaseModel', () => {
       });
     });
   });
+
+  describe('delete', () => {
+    it('should keep documents and clear documents.knowledgeBaseId when deleting a knowledge base', async () => {
+      await serverDB.insert(documents).values({
+        id: 'docs_delete_fk_test',
+        title: 'FK test document',
+        content: 'content',
+        fileType: 'application/pdf',
+        totalCharCount: 7,
+        totalLineCount: 1,
+        sourceType: 'file',
+        source: 'test.pdf',
+        userId,
+      });
+
+      const { id: knowledgeBaseId } = await knowledgeBaseModel.create({ name: 'Delete Me' });
+
+      await serverDB
+        .update(documents)
+        .set({ knowledgeBaseId })
+        .where(eq(documents.id, 'docs_delete_fk_test'));
+
+      await knowledgeBaseModel.delete(knowledgeBaseId);
+
+      const document = await serverDB.query.documents.findFirst({
+        where: eq(documents.id, 'docs_delete_fk_test'),
+      });
+
+      expect(document).toBeDefined();
+      expect(document?.knowledgeBaseId).toBeNull();
+    });
+  });
 });

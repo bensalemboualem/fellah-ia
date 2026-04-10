@@ -31,9 +31,11 @@ const ConfigGroupModal = memo<ModalProps>(({ open, onCancel }) => {
   const sessionGroupItems = useHomeStore(
     (s) =>
       homeAgentListSelectors.agentGroups(s).map((g) => ({
+        createdAt: new Date(0),
         id: g.id,
         name: g.name,
         sort: g.sort,
+        updatedAt: new Date(0),
       })),
     isEqual,
   );

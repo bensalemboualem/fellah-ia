@@ -1,5 +1,4 @@
 import { LobeChatDatabase } from '@lobechat/database';
-import urlJoin from 'url-join';
 
 import { FileModel } from '@/database/models/file';
 import { fileEnv } from '@/envs/file';
@@ -12,10 +11,10 @@ import { type FileServiceImpl } from './type';
  */
 export class S3StaticFileImpl implements FileServiceImpl {
   private readonly s3: FileS3;
-  private readonly db: LobeChatDatabase;
+  private readonly fileModel: FileModel;
 
-  constructor(db: LobeChatDatabase) {
-    this.db = db;
+  constructor(db: LobeChatDatabase, userId: string) {
+    this.fileModel = new FileModel(db, userId);
     this.s3 = new FileS3();
   }
 
@@ -65,16 +64,7 @@ export class S3StaticFileImpl implements FileServiceImpl {
       key = extractedKey;
     }
 
-    // If bucket is not set public read, the preview address needs to be regenerated each time
-    if (!fileEnv.S3_SET_ACL) {
-      return await this.createPreSignedUrlForPreview(key, expiresIn);
-    }
-
-    if (fileEnv.S3_ENABLE_PATH_STYLE) {
-      return urlJoin(fileEnv.S3_PUBLIC_DOMAIN!, fileEnv.S3_BUCKET!, key);
-    }
-
-    return urlJoin(fileEnv.S3_PUBLIC_DOMAIN!, key);
+    return await this.createPreSignedUrlForPreview(key, expiresIn);
   }
 
   async getKeyFromFullUrl(url: string): Promise<string | null> {
@@ -85,7 +75,7 @@ export class S3StaticFileImpl implements FileServiceImpl {
       // Case 1: File proxy URL pattern /f/{fileId} - query database for S3 key
       if (pathname.startsWith('/f/')) {
         const fileId = pathname.slice(3); // Remove '/f/' prefix
-        const file = await FileModel.getFileById(this.db, fileId);
+        const file = await this.fileModel.findById(fileId);
         return file?.url ?? null;
       }
 

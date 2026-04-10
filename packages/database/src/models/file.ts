@@ -2,6 +2,7 @@ import { FilesTabs, QueryFileListParams, SortType } from '@lobechat/types';
 import { and, asc, count, desc, eq, ilike, inArray, like, notExists, or, sum } from 'drizzle-orm';
 import type { PgTransaction } from 'drizzle-orm/pg-core';
 
+import { ChunkModel } from './chunk';
 import {
   FileItem,
   NewFile,
@@ -26,8 +27,8 @@ export class FileModel {
   }
 
   /**
-   * Get file by ID without userId filter (public access)
-   * Use this for scenarios like file proxy where file should be accessible by ID alone
+   * Get file by ID without userId filter.
+   * This must never be used as an authorization check.
    *
    * @param db - Database instance
    * @param id - File ID
@@ -133,7 +134,13 @@ export class FileModel {
       }
     };
 
-    return await (trx ? executeInTransaction(trx) : this.db.transaction(executeInTransaction));
+    const result = await (trx ? executeInTransaction(trx) : this.db.transaction(executeInTransaction));
+
+    if (!trx && result) {
+      await new ChunkModel(this.db, this.userId).deleteOrphanChunks();
+    }
+
+    return result;
   };
 
   deleteGlobalFile = async (hashId: string) => {
@@ -154,7 +161,7 @@ export class FileModel {
   deleteMany = async (ids: string[], removeGlobalFile: boolean = true) => {
     if (ids.length === 0) return [];
 
-    return await this.db.transaction(async (trx) => {
+    const result = await this.db.transaction(async (trx) => {
       // 1. First get the file list to return the deleted files
       const fileList = await trx.query.files.findMany({
         where: and(inArray(files.id, ids), eq(files.userId, this.userId)),
@@ -196,6 +203,12 @@ export class FileModel {
       // Return the list of deleted files
       return fileList;
     });
+
+    if (result.length > 0) {
+      await new ChunkModel(this.db, this.userId).deleteOrphanChunks();
+    }
+
+    return result;
   };
 
   clear = async () => {
@@ -381,31 +394,10 @@ export class FileModel {
         const batchChunkIds = chunkIds.slice(startIdx, startIdx + BATCH_SIZE);
         if (batchChunkIds.length === 0) continue;
 
-        // Process each batch in the correct deletion order, failures do not block the flow
         const batchPromise = (async () => {
-          // 1. Delete embeddings (top-level, has foreign key dependencies)
-          try {
-            await trx.delete(embeddings).where(inArray(embeddings.chunkId, batchChunkIds));
-          } catch (e) {
-            // Silent handling, does not block deletion process
-            console.warn('Failed to delete embeddings:', e);
-          }
-
-          // 2. Delete documentChunks association (if exists)
-          try {
-            await trx.delete(documentChunks).where(inArray(documentChunks.chunkId, batchChunkIds));
-          } catch (e) {
-            // Silent handling, does not block deletion process
-            console.warn('Failed to delete documentChunks:', e);
-          }
-
-          // 3. Delete chunks (core data)
-          try {
-            await trx.delete(chunks).where(inArray(chunks.id, batchChunkIds));
-          } catch (e) {
-            // Silent handling, does not block deletion process
-            console.warn('Failed to delete chunks:', e);
-          }
+          await trx.delete(embeddings).where(inArray(embeddings.chunkId, batchChunkIds));
+          await trx.delete(documentChunks).where(inArray(documentChunks.chunkId, batchChunkIds));
+          await trx.delete(chunks).where(inArray(chunks.id, batchChunkIds));
         })();
 
         batchPromises.push(batchPromise);
@@ -415,13 +407,7 @@ export class FileModel {
       await Promise.all(batchPromises);
     }
 
-    // 4. Finally delete fileChunks association table records
-    try {
-      await trx.delete(fileChunks).where(inArray(fileChunks.fileId, fileIds));
-    } catch (e) {
-      // Silent handling, does not block deletion process
-      console.warn('Failed to delete fileChunks:', e);
-    }
+    await trx.delete(fileChunks).where(inArray(fileChunks.fileId, fileIds));
 
     return chunkIds;
   };

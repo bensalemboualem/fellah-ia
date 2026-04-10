@@ -1,5 +1,6 @@
 import debug from 'debug';
 
+import { auth } from '@/auth';
 import { FileModel } from '@/database/models/file';
 import { getServerDB } from '@/database/server';
 import { getRedisConfig } from '@/envs/redis';
@@ -25,17 +26,39 @@ interface CachedFileData {
  * GET /f/:id
  *
  * Features:
- * - Query database to get file record (without userId filter for public access)
+ * - Require an authenticated user
+ * - Query database with a strict userId filter
  * - Generate access URL based on platform (desktop → local file, web → S3 presigned URL)
  * - Cache presigned URL in Redis to reduce S3 API calls
  * - Return 302 redirect
  */
-export const GET = async (_req: Request, segmentData: { params: Params }) => {
+export const GET = async (req: Request, segmentData: { params: Params }) => {
   try {
     const params = await segmentData.params;
     const { id } = params;
 
     log('File proxy request: %s', id);
+
+    const session = await auth.api.getSession({ headers: req.headers });
+
+    if (!session) {
+      log('Unauthorized file proxy request: %s', id);
+      return new Response('Unauthorized', {
+        status: 401,
+      });
+    }
+
+    // Get database connection
+    const db = await getServerDB();
+    const fileModel = new FileModel(db, session.user.id);
+    const file = await fileModel.findById(id);
+
+    if (!file) {
+      log('File not found or not accessible: %s', id);
+      return new Response('File not found', {
+        status: 404,
+      });
+    }
 
     // Try to get cached presigned URL from Redis
     const redisConfig = getRedisConfig();
@@ -52,21 +75,7 @@ export const GET = async (_req: Request, segmentData: { params: Params }) => {
       log('Cache miss for file: %s', id);
     }
 
-    // Get database connection
-    const db = await getServerDB();
-
-    // Query file record without userId filter (public access)
-    const file = await FileModel.getFileById(db, id);
-
-    if (!file) {
-      log('File not found: %s', id);
-      return new Response('File not found', {
-        status: 404,
-      });
-    }
-
-    // Create file service with file owner's userId
-    const fileService = new FileService(db, file.userId);
+    const fileService = new FileService(db, session.user.id);
 
     // Web: Generate S3 presigned URL (5 minutes expiry)
     const redirectUrl = await fileService.createPreSignedUrlForPreview(file.url, 300);

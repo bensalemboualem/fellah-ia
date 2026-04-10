@@ -571,5 +571,54 @@ content in Table html is below:
 
       expect(result).toHaveLength(15);
     });
+
+    it('should not return chunks for file ids owned by another user', async () => {
+      const otherUserId = 'chunk-model-other-user';
+      await serverDB.insert(users).values([{ id: otherUserId }]).onConflictDoNothing();
+
+      const otherChunkModel = new ChunkModel(serverDB, otherUserId);
+      const otherFileId = 'foreign-file-1';
+
+      await serverDB.insert(files).values({
+        id: otherFileId,
+        name: 'foreign.pdf',
+        url: 'https://example.com/foreign.pdf',
+        size: 123,
+        fileType: 'application/pdf',
+        userId: otherUserId,
+      });
+
+      const [foreignChunk] = await serverDB
+        .insert(chunks)
+        .values([{ text: 'Foreign chunk', userId: otherUserId }])
+        .returning();
+
+      await serverDB.insert(fileChunks).values({
+        chunkId: foreignChunk.id,
+        fileId: otherFileId,
+        userId: otherUserId,
+      });
+
+      await serverDB.insert(embeddings).values({
+        chunkId: foreignChunk.id,
+        embeddings: designThinkingQuery,
+        userId: otherUserId,
+      });
+
+      const result = await chunkModel.semanticSearchForChat({
+        embedding: designThinkingQuery2,
+        fileIds: [otherFileId],
+        query: 'foreign',
+      });
+
+      expect(result).toEqual([]);
+      await expect(
+        otherChunkModel.semanticSearchForChat({
+          embedding: designThinkingQuery2,
+          fileIds: [otherFileId],
+          query: 'foreign',
+        }),
+      ).resolves.toHaveLength(1);
+    });
   });
 });

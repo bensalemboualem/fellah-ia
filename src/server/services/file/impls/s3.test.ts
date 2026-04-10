@@ -1,14 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { FileModel } from '@/database/models/file';
-
 import { S3StaticFileImpl } from './s3';
 
 const config = {
   S3_ENABLE_PATH_STYLE: false,
   S3_PUBLIC_DOMAIN: 'https://example.com',
   S3_BUCKET: 'my-bucket',
-  S3_SET_ACL: true,
+  S3_SET_ACL: false,
 };
 
 // 模拟 fileEnv
@@ -42,7 +40,7 @@ describe('S3StaticFileImpl', () => {
   let fileService: S3StaticFileImpl;
 
   beforeEach(() => {
-    fileService = new S3StaticFileImpl(mockDb);
+    fileService = new S3StaticFileImpl(mockDb, 'user-a');
   });
 
   describe('getFullFileUrl', () => {
@@ -55,21 +53,20 @@ describe('S3StaticFileImpl', () => {
       config.S3_SET_ACL = false;
       const url = 'path/to/file.jpg';
       expect(await fileService.getFullFileUrl(url)).toBe('https://presigned.example.com/test.jpg');
-      config.S3_SET_ACL = true;
     });
 
-    it('should return correct URL when S3_ENABLE_PATH_STYLE is false', async () => {
+    it('should return signed preview URL by default for private objects', async () => {
       const url = 'path/to/file.jpg';
-      expect(await fileService.getFullFileUrl(url)).toBe('https://example.com/path/to/file.jpg');
+      expect(await fileService.getFullFileUrl(url)).toBe('https://presigned.example.com/test.jpg');
     });
 
-    it('should return correct URL when S3_ENABLE_PATH_STYLE is true', async () => {
+    it('should still return signed preview URL even when public mode is enabled globally', async () => {
+      config.S3_SET_ACL = true;
       config.S3_ENABLE_PATH_STYLE = true;
       const url = 'path/to/file.jpg';
-      expect(await fileService.getFullFileUrl(url)).toBe(
-        'https://example.com/my-bucket/path/to/file.jpg',
-      );
+      expect(await fileService.getFullFileUrl(url)).toBe('https://presigned.example.com/test.jpg');
       config.S3_ENABLE_PATH_STYLE = false;
+      config.S3_SET_ACL = false;
     });
 
     // Legacy bug compatibility tests - https://github.com/lobehub/lobe-chat/issues/8994
@@ -85,10 +82,10 @@ describe('S3StaticFileImpl', () => {
 
         expect(fileService.getKeyFromFullUrl).toHaveBeenCalledWith(fullUrl);
         expect(result).toBe('https://presigned.example.com/test.jpg');
-        config.S3_SET_ACL = true;
       });
 
       it('should handle full URL input by extracting key (S3_SET_ACL=true)', async () => {
+        config.S3_SET_ACL = true;
         const fullUrl = 'https://s3.example.com/bucket/path/to/file.jpg';
 
         vi.spyOn(fileService, 'getKeyFromFullUrl').mockResolvedValue('path/to/file.jpg');
@@ -96,7 +93,8 @@ describe('S3StaticFileImpl', () => {
         const result = await fileService.getFullFileUrl(fullUrl);
 
         expect(fileService.getKeyFromFullUrl).toHaveBeenCalledWith(fullUrl);
-        expect(result).toBe('https://example.com/path/to/file.jpg');
+        expect(result).toBe('https://presigned.example.com/test.jpg');
+        config.S3_SET_ACL = false;
       });
 
       it('should handle normal key input without extraction', async () => {
@@ -107,10 +105,11 @@ describe('S3StaticFileImpl', () => {
         const result = await fileService.getFullFileUrl(key);
 
         expect(spy).not.toHaveBeenCalled();
-        expect(result).toBe('https://example.com/path/to/file.jpg');
+        expect(result).toBe('https://presigned.example.com/test.jpg');
       });
 
       it('should handle http:// URLs for legacy compatibility', async () => {
+        config.S3_SET_ACL = true;
         const httpUrl = 'http://s3.example.com/bucket/path/to/file.jpg';
 
         vi.spyOn(fileService, 'getKeyFromFullUrl').mockResolvedValue('path/to/file.jpg');
@@ -118,7 +117,20 @@ describe('S3StaticFileImpl', () => {
         const result = await fileService.getFullFileUrl(httpUrl);
 
         expect(fileService.getKeyFromFullUrl).toHaveBeenCalledWith(httpUrl);
-        expect(result).toBe('https://example.com/path/to/file.jpg');
+        expect(result).toBe('https://presigned.example.com/test.jpg');
+        config.S3_SET_ACL = false;
+      });
+
+      it('should fallback to signed preview URL when public domain is missing', async () => {
+        config.S3_SET_ACL = true;
+        config.S3_PUBLIC_DOMAIN = undefined as any;
+
+        const result = await fileService.getFullFileUrl('path/to/file.jpg');
+
+        expect(result).toBe('https://presigned.example.com/test.jpg');
+
+        config.S3_PUBLIC_DOMAIN = 'https://example.com';
+        config.S3_SET_ACL = false;
       });
 
       it('should throw error when key extraction returns null', async () => {
@@ -194,26 +206,30 @@ describe('S3StaticFileImpl', () => {
   });
 
   describe('getKeyFromFullUrl', () => {
-    it('should extract fileId from proxy URL and return S3 key from database', async () => {
+    it('should extract fileId from proxy URL and return S3 key from the scoped file model', async () => {
       const proxyUrl = 'http://localhost:3010/f/abc123';
       const expectedKey = 'ppp/491067/image.jpg';
 
-      vi.spyOn(FileModel, 'getFileById').mockResolvedValue({ url: expectedKey } as any);
+      const findByIdSpy = vi.spyOn((fileService as any).fileModel, 'findById').mockResolvedValue({
+        url: expectedKey,
+      } as any);
 
       const result = await fileService.getKeyFromFullUrl(proxyUrl);
 
-      expect(FileModel.getFileById).toHaveBeenCalledWith(mockDb, 'abc123');
+      expect(findByIdSpy).toHaveBeenCalledWith('abc123');
       expect(result).toBe(expectedKey);
     });
 
-    it('should return null when file is not found in database', async () => {
+    it('should return null when the scoped file model cannot access the file', async () => {
       const proxyUrl = 'http://localhost:3010/f/nonexistent';
 
-      vi.spyOn(FileModel, 'getFileById').mockResolvedValue(undefined);
+      const findByIdSpy = vi.spyOn((fileService as any).fileModel, 'findById').mockResolvedValue(
+        undefined,
+      );
 
       const result = await fileService.getKeyFromFullUrl(proxyUrl);
 
-      expect(FileModel.getFileById).toHaveBeenCalledWith(mockDb, 'nonexistent');
+      expect(findByIdSpy).toHaveBeenCalledWith('nonexistent');
       expect(result).toBeNull();
     });
 
@@ -221,11 +237,13 @@ describe('S3StaticFileImpl', () => {
       const proxyUrl = 'https://example.com/f/file456';
       const expectedKey = 'uploads/file.png';
 
-      vi.spyOn(FileModel, 'getFileById').mockResolvedValue({ url: expectedKey } as any);
+      const findByIdSpy = vi.spyOn((fileService as any).fileModel, 'findById').mockResolvedValue({
+        url: expectedKey,
+      } as any);
 
       const result = await fileService.getKeyFromFullUrl(proxyUrl);
 
-      expect(FileModel.getFileById).toHaveBeenCalledWith(mockDb, 'file456');
+      expect(findByIdSpy).toHaveBeenCalledWith('file456');
       expect(result).toBe(expectedKey);
     });
 

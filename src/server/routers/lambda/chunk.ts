@@ -5,7 +5,7 @@ import {
   SemanticSearchSchema,
 } from '@lobechat/types';
 import { TRPCError } from '@trpc/server';
-import { inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import pMap from 'p-map';
 import { z } from 'zod';
 
@@ -16,7 +16,7 @@ import { DocumentModel } from '@/database/models/document';
 import { EmbeddingModel } from '@/database/models/embedding';
 import { FileModel } from '@/database/models/file';
 import { MessageModel } from '@/database/models/message';
-import { knowledgeBaseFiles } from '@/database/schemas';
+import { knowledgeBaseFiles, knowledgeBases } from '@/database/schemas';
 import { authedProcedure, router } from '@/libs/trpc/lambda';
 import { keyVaults, serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { getServerDefaultFilesConfig } from '@/server/globalConfig';
@@ -224,6 +224,19 @@ export const chunkRouter = router({
     )
     .use(checkBudgetsUsage)
     .mutation(async ({ ctx, input }) => {
+      if (input.fileIds && input.fileIds.length > 0) {
+        const ownedFiles = await ctx.fileModel.findByIds(input.fileIds);
+        const ownedFileIds = new Set(ownedFiles.map((file) => file.id));
+        const unauthorizedFileIds = input.fileIds.filter((id) => !ownedFileIds.has(id));
+
+        if (unauthorizedFileIds.length > 0) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'One or more files are not accessible',
+          });
+        }
+      }
+
       const { model, provider } =
         getServerDefaultFilesConfig().embeddingModel || DEFAULT_FILE_EMBEDDING_MODEL_ITEM;
       // Read user's provider config from database
@@ -266,12 +279,50 @@ export const chunkRouter = router({
 
         let finalFileIds = input.fileIds ?? [];
 
+        if (finalFileIds.length > 0) {
+          const ownedFiles = await ctx.fileModel.findByIds(finalFileIds);
+          const ownedFileIds = new Set(ownedFiles.map((file) => file.id));
+          const unauthorizedFileIds = finalFileIds.filter((id) => !ownedFileIds.has(id));
+
+          if (unauthorizedFileIds.length > 0) {
+            throw new TRPCError({
+              code: 'FORBIDDEN',
+              message: 'One or more files are not accessible',
+            });
+          }
+
+          finalFileIds = ownedFiles.map((file) => file.id);
+        }
+
         if (input.knowledgeIds && input.knowledgeIds.length > 0) {
-          const knowledgeFiles = await ctx.serverDB.query.knowledgeBaseFiles.findMany({
-            where: inArray(knowledgeBaseFiles.knowledgeBaseId, input.knowledgeIds),
+          const ownedKnowledgeBases = await ctx.serverDB.query.knowledgeBases.findMany({
+            columns: { id: true },
+            where: and(
+              inArray(knowledgeBases.id, input.knowledgeIds),
+              eq(knowledgeBases.userId, ctx.userId),
+            ),
           });
 
-          finalFileIds = knowledgeFiles.map((f) => f.fileId).concat(finalFileIds);
+          const ownedKnowledgeBaseIds = new Set(ownedKnowledgeBases.map((item) => item.id));
+          const unauthorizedKnowledgeIds = input.knowledgeIds.filter(
+            (id) => !ownedKnowledgeBaseIds.has(id),
+          );
+
+          if (unauthorizedKnowledgeIds.length > 0) {
+            throw new TRPCError({
+              code: 'FORBIDDEN',
+              message: 'One or more knowledge bases are not accessible',
+            });
+          }
+
+          const knowledgeFiles = await ctx.serverDB.query.knowledgeBaseFiles.findMany({
+            where: and(
+              inArray(knowledgeBaseFiles.knowledgeBaseId, input.knowledgeIds),
+              eq(knowledgeBaseFiles.userId, ctx.userId),
+            ),
+          });
+
+          finalFileIds = [...new Set(knowledgeFiles.map((f) => f.fileId).concat(finalFileIds))];
         }
 
         const chunks = await ctx.chunkModel.semanticSearchForChat({
@@ -284,10 +335,10 @@ export const chunkRouter = router({
         // Group chunks by file and calculate relevance scores
         const fileResults = groupAndRankFiles(chunks, input.topK || 15);
 
-        // TODO: need to rerank the chunks
-
         return { chunks, fileResults };
       } catch (e) {
+        if (e instanceof TRPCError) throw e;
+
         console.error(e);
 
         const error = e as any;

@@ -134,9 +134,9 @@ export class S3 {
 
   public async createPreSignedUrl(key: string): Promise<string> {
     const command = new PutObjectCommand({
-      ACL: this.setAcl ? 'public-read' : undefined,
       Bucket: this.bucket,
       Key: key,
+      ...(this.setAcl ? { ACL: 'public-read' as const } : {}),
     });
 
     return getSignedUrl(this.client, command, { expiresIn: 3600 });
@@ -156,11 +156,11 @@ export class S3 {
   // Add a new method for uploading binary content
   public async uploadBuffer(path: string, buffer: Buffer, contentType?: string) {
     const command = new PutObjectCommand({
-      ACL: this.setAcl ? 'public-read' : undefined,
       Body: buffer,
       Bucket: this.bucket,
       ContentType: contentType,
       Key: path,
+      ...(this.setAcl ? { ACL: 'public-read' as const } : {}),
     });
 
     return this.client.send(command);
@@ -168,10 +168,10 @@ export class S3 {
 
   public async uploadContent(path: string, content: string) {
     const command = new PutObjectCommand({
-      ACL: this.setAcl ? 'public-read' : undefined,
       Body: content,
       Bucket: this.bucket,
       Key: path,
+      ...(this.setAcl ? { ACL: 'public-read' as const } : {}),
     });
 
     return this.client.send(command);
@@ -179,12 +179,12 @@ export class S3 {
 
   public async uploadMedia(key: string, buffer: Buffer) {
     const command = new PutObjectCommand({
-      ACL: this.setAcl ? 'public-read' : undefined,
       Body: buffer,
       Bucket: this.bucket,
       CacheControl: `public, max-age=${YEAR}`,
       ContentType: inferContentTypeFromImageUrl(key)!,
       Key: key,
+      ...(this.setAcl ? { ACL: 'public-read' as const } : {}),
     });
 
     await this.client.send(command);
@@ -197,7 +197,7 @@ export class FileS3 extends S3 {
       bucket: fileEnv.S3_BUCKET,
       forcePathStyle: fileEnv.S3_ENABLE_PATH_STYLE,
       region: fileEnv.S3_REGION,
-      setAcl: fileEnv.S3_SET_ACL,
+      setAcl: false,
     });
   }
 }
